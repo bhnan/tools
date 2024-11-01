@@ -5,9 +5,8 @@ on:
     branches:
       - main  # 或你想要的分支
     paths:
-      - '.github/workflows/rss_generator.yml'
-      - 'rss_generator.py'
-      - 'config.yaml'
+      - '.github/workflows/manual.yml'
+      - 'web2rss/**'
   schedule:
     - cron: '0 0 * * *'  # 每天运行一次
   workflow_dispatch:  # 允许手动触发
@@ -28,30 +27,21 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install -y chromium-browser
-        pip install -r requirements.txt  # 确保requirements.txt包含selenium和其他依赖
+        pip install -r web2rss/requirements.txt  # 确保requirements.txt包含selenium和其他依赖
 
     - name: Run RSS generator
       env:
         DISPLAY: ':99'  # 设置无头浏览器显示
       run: |
         Xvfb :99 -ac &
-        python rss_generator.py  # 运行你的Python脚本
+        python web2rss/gen_rss.py  # 运行你的Python脚本
     - name: Commit and push changes
       env:
-<<<<<<< HEAD
-        GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}  # 使用GITHUB_TOKEN
-=======
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用GITHUB_TOKEN
->>>>>>> 9d16f86 (自带的github_token就可以，不用创建新的)
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add rss/*
         git commit -m "Update RSS feeds"
-<<<<<<< HEAD
-        git remote set-url --push origin https:/bhnan:$GITHUB_TOKEN@github.com/xxcdd/web2rss
-        git push origin master
-=======
         git remote set-url --push origin https://$GITHUB_TOKEN@github.com/bhnan/tools.git
         git push origin main
->>>>>>> 9d16f86 (自带的github_token就可以，不用创建新的)
