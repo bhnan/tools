@@ -6,7 +6,7 @@
     <description>Latest posts from https://www.anthropic.com/research. follow.is: feedId:71805759203098624+userId:71370844472670208</description>
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>python-feedgen</generator>
-    <lastBuildDate>Tue, 19 Nov 2024 01:13:49 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 20 Nov 2024 01:13:04 +0000</lastBuildDate>
     <item>
       <title>Predictability and Surprise in Large Generative Models</title>
       <link>https://www.anthropic.com/research/predictability-and-surprise-in-large-generative-models</link>
@@ -516,6 +516,11 @@
       <title>Raising the bar on SWE-bench Verified with Claude 3.5 Sonnet</title>
       <link>https://www.anthropic.com/research/swe-bench-sonnet</link>
       <description>ProductRaising the bar on SWE-bench Verified with Claude 3.5 SonnetOct 30, 2024</description>
+    </item>
+    <item>
+      <title>A statistical approach to model evaluations</title>
+      <link>https://www.anthropic.com/research/statistical-approach-to-model-evals</link>
+      <description>EvaluationsA statistical approach to model evaluationsNov 19, 2024</description>
     </item>
   </channel>
 </rss>
