@@ -6,7 +6,7 @@
     <description>Latest posts from https://www.anthropic.com/research. follow.is: feedId:71805759203098624+userId:71370844472670208</description>
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>python-feedgen</generator>
-    <lastBuildDate>Thu, 12 Dec 2024 01:15:46 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 13 Dec 2024 01:17:22 +0000</lastBuildDate>
     <item>
       <title>Predictability and Surprise in Large Generative Models</title>
       <link>https://www.anthropic.com/research/predictability-and-surprise-in-large-generative-models</link>
@@ -56,6 +56,11 @@
       <title>Evaluating feature steering: A case study in mitigating social biases</title>
       <link>https://www.anthropic.com/research/evaluating-feature-steering</link>
       <description>Societal Impacts·  InterpretabilityEvaluating feature steering: A case study in mitigating social biasesOct 25, 2024</description>
+    </item>
+    <item>
+      <title>Clio: A system for privacy-preserving insights into real-world AI use</title>
+      <link>https://www.anthropic.com/research/clio</link>
+      <description>Societal ImpactsClio: A system for privacy-preserving insights into real-world AI useDec 12, 2024</description>
     </item>
     <item>
       <title>A General Language Assistant as a Laboratory for Alignment</title>
@@ -521,6 +526,11 @@
       <title>A statistical approach to model evaluations</title>
       <link>https://www.anthropic.com/research/statistical-approach-to-model-evals</link>
       <description>EvaluationsA statistical approach to model evaluationsNov 19, 2024</description>
+    </item>
+    <item>
+      <title>Clio: A system for privacy-preserving insights into real-world AI use</title>
+      <link>https://www.anthropic.com/research/clio</link>
+      <description>Societal ImpactsClio: A system for privacy-preserving insights into real-world AI useDec 12, 2024</description>
     </item>
   </channel>
 </rss>
