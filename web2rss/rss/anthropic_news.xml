@@ -6,7 +6,7 @@
     <description>Latest posts from https://www.anthropic.com/research. follow.is: feedId:71805759203098624+userId:71370844472670208</description>
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>python-feedgen</generator>
-    <lastBuildDate>Thu, 19 Dec 2024 01:13:58 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 20 Dec 2024 01:10:22 +0000</lastBuildDate>
     <item>
       <title>Predictability and Surprise in Large Generative Models</title>
       <link>https://www.anthropic.com/research/predictability-and-surprise-in-large-generative-models</link>
@@ -541,6 +541,11 @@
       <title>Alignment faking in large language models</title>
       <link>https://www.anthropic.com/research/alignment-faking</link>
       <description>AlignmentAlignment faking in large language modelsDec 18, 2024</description>
+    </item>
+    <item>
+      <title>Building effective agents</title>
+      <link>https://www.anthropic.com/research/building-effective-agents</link>
+      <description>ProductBuilding effective agentsDec 19, 2024</description>
     </item>
   </channel>
 </rss>
