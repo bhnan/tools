@@ -1,7 +1,7 @@
 {
     "sites": [
         {
-            "name": "anthropic_researchs",
+            "name": "anthropic_research",
             "follow_desc": "feedId:71805759203098624+userId:71370844472670208",
             "url": "https://www.anthropic.com/research",
             "block_css": "a.PostCard_post-card___tQ6w",
