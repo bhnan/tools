@@ -4,9 +4,9 @@
             "name": "anthropic_reasearch",
             "follow_desc": "feedId:74838602499110912+userId:73721007538233344",
             "url": "https://www.anthropic.com/research",
-            "block_css": "a.PostCard_post-card___tQ6w",
+            "block_css": "a.PostCard_post-card__z_Sqq",
             "title_css": "h3",
-            "description_css": ".PostCard_post-info__gybiy",
+            "description_css": ".PostCard_post-info__pSlap",
             "link_css": "",
             "use_headless_browser": true
         }

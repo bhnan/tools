@@ -45,20 +45,27 @@ def fetch_blog_posts(config):
 
     # 基于文本块选择器获取所有相关块
     blocks = soup.select(config['block_css'])
-
+    print(f"找到 {len(blocks)} 个文章块")
+    
     posts = []
-    for block in blocks:
+    for i, block in enumerate(blocks):
         title = block.select_one(config['title_css'])
         description = block.select_one(config['description_css'])
         link = block.select_one(config['link_css']) if config['link_css'] else block
-
+        
+        print(f"文章 {i + 1}:")
+        print(f"- 标题选择器匹配: {'成功' if title else '失败'}")
+        print(f"- 描述选择器匹配: {'成功' if description else '失败'}")
+        print(f"- 链接选择器匹配: {'成功' if link else '失败'}")
+        
         if title and description and link:
             posts.append({
                 'title': title.get_text(strip=True),
                 'description': description.get_text(strip=True),
                 'link': link['href'] if link['href'].startswith('http') else urljoin(config['url'], link['href'])
             })
-
+    
+    print(f"成功提取 {len(posts)} 篇文章")
     return posts
 
 def generate_rss(posts, site):
