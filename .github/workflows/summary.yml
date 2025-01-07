@@ -26,8 +26,6 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get install -y chromium-browser
-        pip install -r web2rss/requirements.txt  # 确保requirements.txt包含selenium和其他依赖
 
     - name: Run RSS generator
       env:
@@ -36,8 +34,9 @@ jobs:
         JINA_API_KEY: ${{ env.JINA_API_KEY }}
       run: |
         Xvfb :99 -ac &
+        echo "GLM_API_KEY: $GLM_API_KEY"
         cd web2rss
-        python gen_rss.py  # 运行你的Python脚本
+        python gen_rss.py
     - name: Commit and push changes
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用GITHUB_TOKEN
