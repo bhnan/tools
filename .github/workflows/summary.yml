@@ -3,7 +3,7 @@ name: Generate RSS Feed2
 on:
   push:
     branches:
-      - summary-version  # 或你想要的分支
+      - main  # 或你想要的分支
     paths:
       - '.github/workflows/manual.yml'
       - 'web2rss/**'
@@ -49,4 +49,4 @@ jobs:
         git add web2rss/rss/*
         git commit -m "Update RSS feeds"
         git remote set-url --push origin https://$GITHUB_TOKEN@github.com/bhnan/tools.git
-        git push origin summary-version
+        git push origin main
