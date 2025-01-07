@@ -12,6 +12,7 @@ from datetime import datetime
 from urllib.parse import urljoin
 import os
 from feedparser import parse
+from gen_summary import SummaryGenerator
 
 
 def create_webdriver():
@@ -83,6 +84,12 @@ def read_existing_rss(file_path):
 
 def generate_rss(posts, site, file_name):
     """生成RSS feed，合并现有的和新的条目"""
+    # 初始化摘要生成器
+    summary_generator = SummaryGenerator(
+        api_key=os.getenv("GLM_API_KEY"),
+        jina_api_key=os.getenv("JINA_API_KEY")
+    )
+    
     feed = FeedGenerator()
     feed.id(site['url'])
     feed.title(site['name'])
@@ -107,24 +114,37 @@ def generate_rss(posts, site, file_name):
     new_entries_count = 0
     for post in posts:
         if post['link'] not in existing_links:
-            entry = feed.add_entry()
-            entry.title(post['title'])
-            entry.link(href=post['link'])
-            entry.description(post['description'])
-            entry.published(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-            new_entries_count += 1
+            try:
+                # 获取文章内容并生成摘要
+                content = summary_generator._fetch_webpage_content(post['link'])
+                summary = summary_generator.generate_summary(
+                    post['description'] + content,
+                    max_length=500,
+                    language="en"  # 或从配置中读取语言设置
+                )
+                
+                entry = feed.add_entry()
+                entry.title(post['title'])
+                entry.link(href=post['link'])
+                entry.description(summary)  # 使用生成的摘要替代原始描述
+                entry.published(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                new_entries_count += 1
+                print(f"已为文章 '{post['title']}' 生成摘要")
+            except Exception as e:
+                print(f"生成摘要失败，使用原始描述: {str(e)}")
+                # 如果摘要生成失败，使用原始描述
+                entry = feed.add_entry()
+                entry.title(post['title'])
+                entry.link(href=post['link'])
+                entry.description(post['description'])
+                entry.published(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                new_entries_count += 1
     
     print(f"添加了 {new_entries_count} 个新条目")
     return feed.rss_str(pretty=True).decode('utf-8')
 
-def get_all_links(posts):
-    """获取所有文章的链接列表"""
-    return [post['link'] for post in posts]
-
 def main():
     config = load_config()
-    
-    all_site_links = {}
     
     for site in config['sites']:
         print(site["url"])
@@ -133,10 +153,6 @@ def main():
             if not posts:
                 print(f"No posts found for {site['url']}, skipping RSS generation.")
                 continue
-            
-            site_links = get_all_links(posts)
-            all_site_links[site['url']] = site_links
-            print(f"Found {len(site_links)} links for {site['url']}")
                 
             file_name = f"rss/{site['name']}.xml"
             rss_feed = generate_rss(posts, site, file_name)
