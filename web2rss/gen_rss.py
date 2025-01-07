@@ -127,7 +127,6 @@ def generate_rss(posts, site, file_name):
                 entry.title(post['title'])
                 entry.link(href=post['link'])
                 entry.description(summary)  # 使用生成的摘要替代原始描述
-                entry.published(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                 new_entries_count += 1
                 print(f"已为文章 '{post['title']}' 生成摘要")
             except Exception as e:
@@ -137,7 +136,6 @@ def generate_rss(posts, site, file_name):
                 entry.title(post['title'])
                 entry.link(href=post['link'])
                 entry.description(post['description'])
-                entry.published(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                 new_entries_count += 1
     
     print(f"添加了 {new_entries_count} 个新条目")
