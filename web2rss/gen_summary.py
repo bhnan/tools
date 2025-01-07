@@ -1,3 +1,5 @@
+import requests
+from bs4 import BeautifulSoup
 from typing import Optional
 from .model import ChatModel
 
@@ -70,6 +72,31 @@ class SummaryGenerator:
         {text}
         """
 
+    def _fetch_webpage_content(self, url: str) -> str:
+        """
+        获取网页内容
+        :param url: 网页URL
+        :return: 网页正文内容
+        """
+        try:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            response = requests.get(url, headers=headers, timeout=10)
+            response.raise_for_status()
+            
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # 移除脚本和样式元素
+            for script in soup(['script', 'style']):
+                script.decompose()
+                
+            # 获取正文内容
+            text = ' '.join([p.get_text().strip() for p in soup.find_all(['p', 'article'])])
+            return text
+        except Exception as e:
+            raise Exception(f"获取网页内容失败: {str(e)}")
+
 # 使用示例
 if __name__ == "__main__":
     API_KEY = "your_api_key_here"
@@ -77,17 +104,13 @@ if __name__ == "__main__":
     # 创建摘要生成器实例
     summary_gen = SummaryGenerator(API_KEY)
     
-    # 示例文章
-    article = """
-    人工智能(AI)正在深刻改变着我们的生活方式。从智能手机助手到自动驾驶汽车，
-    从医疗诊断到金融分析，AI技术的应用范围越来越广。但同时，AI的发展也带来了
-    一些担忧，比如就业替代、隐私安全等问题。专家认为，要在发展AI技术的同时，
-    建立相应的伦理框架和监管机制，确保AI的发展造福人类。
-    """
+    # 示例URL
+    url = "https://example.com/article"
     
     try:
-        # 生成摘要
-        summary = summary_gen.generate_summary(article, max_length=100)
+        # 获取网页内容并生成摘要
+        content = summary_gen._fetch_webpage_content(url)
+        summary = summary_gen.generate_summary(content)
         print("文章摘要：")
         print(summary)
     except Exception as e:
