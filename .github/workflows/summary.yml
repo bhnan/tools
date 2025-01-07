@@ -32,6 +32,8 @@ jobs:
     - name: Run RSS generator
       env:
         DISPLAY: ':99'  # 设置无头浏览器显示
+        GLM_API_KEY: ${{ env.GLM_API_KEY }}
+        JINA_API_KEY: ${{ env.JINA_API_KEY }}
       run: |
         Xvfb :99 -ac &
         cd web2rss
@@ -45,4 +47,4 @@ jobs:
         git add web2rss/rss/*
         git commit -m "Update RSS feeds"
         git remote set-url --push origin https://$GITHUB_TOKEN@github.com/bhnan/tools.git
-        git push origin main
+        git push origin summary-version
