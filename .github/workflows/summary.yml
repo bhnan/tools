@@ -45,4 +45,4 @@ jobs:
         git add web2rss/rss/*
         git commit -m "Update RSS feeds"
         git remote set-url --push origin https://$GITHUB_TOKEN@github.com/bhnan/tools.git
-        git push origin main
+        git push origin summary-version
