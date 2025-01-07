@@ -32,12 +32,23 @@ jobs:
     - name: Run RSS generator
       env:
         DISPLAY: ':99'  # 设置无头浏览器显示
+<<<<<<< HEAD
         GLM_API_KEY: ${{ env.GLM_API_KEY }}
         JINA_API_KEY: ${{ env.JINA_API_KEY }}
       run: |
         Xvfb :99 -ac &
         cd web2rss
         python gen_rss.py  # 运行你的Python脚本
+=======
+        GLM_API_KEY: ${{ secrets.GLM_API_KEY }}
+        JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
+      run: |
+        Xvfb :99 -ac &
+        export GLM_API_KEY=$GLM_API_KEY
+        export JINA_API_KEY=$JINA_API_KEY
+        cd web2rss
+        python gen_rss.py
+>>>>>>> summary-version
     - name: Commit and push changes
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用GITHUB_TOKEN

@@ -10,6 +10,9 @@ import time as time_module
 from soupsieve.util import SelectorSyntaxError
 from datetime import datetime
 from urllib.parse import urljoin
+import os
+from feedparser import parse
+from gen_summary import SummaryGenerator
 
 
 def create_webdriver():
@@ -68,20 +71,75 @@ def fetch_blog_posts(config):
     print(f"成功提取 {len(posts)} 篇文章")
     return posts
 
-def generate_rss(posts, site):
+def read_existing_rss(file_path):
+    """读取现有的RSS文件中的条目"""
+    if not os.path.exists(file_path):
+        return set()
+    
+    feed = parse(file_path)
+    existing_links = set()
+    for entry in feed.entries:
+        existing_links.add(entry.link)
+    return existing_links
+
+def generate_rss(posts, site, file_name):
+    """生成RSS feed，合并现有的和新的条目"""
+    # 初始化摘要生成器
+    summary_generator = SummaryGenerator(
+        api_key=os.getenv("GLM_API_KEY"),
+        jina_api_key=os.getenv("JINA_API_KEY")
+    )
+    
     feed = FeedGenerator()
     feed.id(site['url'])
     feed.title(site['name'])
     feed.link(href=site['url'])
     feed.description(f"Latest posts from {site['url']}. follow.is: {site['follow_desc']}")
 
-    for post in posts:
-        entry = feed.add_entry()
-        entry.title(post['title'])
-        entry.link(href=post['link'])
-        entry.description(post['description'])
+    # 读取现有的RSS文件中的条目
+    existing_links = read_existing_rss(file_name)
+    
+    # 如果文件已存在，读取现有的条目并添加到feed中
+    if os.path.exists(file_name):
+        existing_feed = parse(file_name)
+        for entry in existing_feed.entries:
+            feed_entry = feed.add_entry()
+            feed_entry.title(entry.title)
+            feed_entry.link(href=entry.link)
+            feed_entry.description(entry.description)
+            if hasattr(entry, 'published'):
+                feed_entry.published(entry.published)
 
-    return feed.rss_str(pretty=True).decode('utf-8')  # 确保返回字符串
+    # 添加新的条目
+    new_entries_count = 0
+    for post in posts:
+        if post['link'] not in existing_links:
+            try:
+                # 获取文章内容并生成摘要
+                content = summary_generator._fetch_webpage_content(post['link'])
+                summary = summary_generator.generate_summary(
+                    post['description'] + content,
+                    max_length=500,
+                    language="en"  # 或从配置中读取语言设置
+                )
+                
+                entry = feed.add_entry()
+                entry.title(post['title'])
+                entry.link(href=post['link'])
+                entry.description(summary)  # 使用生成的摘要替代原始描述
+                new_entries_count += 1
+                print(f"已为文章 '{post['title']}' 生成摘要")
+            except Exception as e:
+                print(f"生成摘要失败，使用原始描述: {str(e)}")
+                # 如果摘要生成失败，使用原始描述
+                entry = feed.add_entry()
+                entry.title(post['title'])
+                entry.link(href=post['link'])
+                entry.description(post['description'])
+                new_entries_count += 1
+    
+    print(f"添加了 {new_entries_count} 个新条目")
+    return feed.rss_str(pretty=True).decode('utf-8')
 
 def main():
     config = load_config()
@@ -94,13 +152,18 @@ def main():
                 print(f"No posts found for {site['url']}, skipping RSS generation.")
                 continue
                 
-            rss_feed = generate_rss(posts, site)
             file_name = f"rss/{site['name']}.xml"
+            rss_feed = generate_rss(posts, site, file_name)
+            
+            # 确保rss目录存在
+            os.makedirs(os.path.dirname(file_name), exist_ok=True)
+            
             with open(file_name, 'w', encoding='utf-8') as file:
-                file.write(rss_feed)  # 确保写入的是字符串
-            print(f"Generated RSS feed for {site['url']} -> {file_name}")           
+                file.write(rss_feed)
+            print(f"Updated RSS feed for {site['url']} -> {file_name}")           
         except Exception as e:
             print(f"Error generating RSS feed for {site['url']}: {e}")
+
 
 if __name__ == '__main__':
     main()
