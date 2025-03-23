@@ -46,26 +46,40 @@ def fetch_blog_posts(config):
         response = requests.get(config['url'])
         soup = BeautifulSoup(response.content, 'html.parser')
 
-    # 基于文本块选择器获取所有相关块
-    blocks = soup.select(config['block_css'])
+    # 使用部分类名匹配
+    blocks = soup.find_all('a', class_=lambda x: x and all(
+        cls in x for cls in ['PostCard_post-card', 'PostList_post-card']
+    ))
     print(f"找到 {len(blocks)} 个文章块")
     
     posts = []
     for i, block in enumerate(blocks):
-        title = block.select_one(config['title_css'])
-        description = block.select_one(config['description_css'])
-        link = block.select_one(config['link_css']) if config['link_css'] else block
+        # 使用部分类名匹配查找元素
+        title = block.find('h3', class_=lambda x: x and 'PostCard_post-heading' in x)
+        description = block.find('span', class_='text-label')
         
         print(f"文章 {i + 1}:")
         print(f"- 标题选择器匹配: {'成功' if title else '失败'}")
         print(f"- 描述选择器匹配: {'成功' if description else '失败'}")
-        print(f"- 链接选择器匹配: {'成功' if link else '失败'}")
+        print(f"- 链接选择器匹配: '成功'")  # 链接直接从 block (a标签) 获取
         
-        if title and description and link:
+        if title and description:
+            # 获取发布日期
+            date_div = block.find('div', class_=lambda x: x and 'PostList_post-date' in x)
+            date_text = date_div.get_text(strip=True) if date_div else ''
+            
+            # 获取文章分类
+            category = block.find('span', class_='text-label').get_text(strip=True)
+            
+            # 组合描述信息
+            full_description = f"分类: {category}"
+            if date_text:
+                full_description += f" | 发布时间: {date_text}"
+            
             posts.append({
                 'title': title.get_text(strip=True),
-                'description': description.get_text(strip=True),
-                'link': link['href'] if link['href'].startswith('http') else urljoin(config['url'], link['href'])
+                'description': full_description,
+                'link': urljoin(config['url'], block['href'])
             })
     
     print(f"成功提取 {len(posts)} 篇文章")
