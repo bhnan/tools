@@ -39,7 +39,7 @@ def fetch_blog_posts(config):
         driver = create_webdriver()
 
         driver.get(config['url'])
-        time_module.sleep(3)
+        time_module.sleep(10)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         driver.quit()
     else:

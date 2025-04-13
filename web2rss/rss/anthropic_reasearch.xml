@@ -6,7 +6,7 @@
     <description>Latest posts from https://www.anthropic.com/research. follow.is: feedId:74838602499110912+userId:73721007538233344</description>
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>python-feedgen</generator>
-    <lastBuildDate>Wed, 05 Mar 2025 01:46:17 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 19 Mar 2025 01:44:24 +0000</lastBuildDate>
     <item>
       <title>Claude’s extended thinking</title>
       <link>https://www.anthropic.com/research/visible-extended-thinking</link>
@@ -709,6 +709,26 @@ Anthropic discusses building effective large language model (LLM) agents, emphas
       <description>2025-02-25
 
 Anthropic's Alignment Science team has developed a method to forecast rare AI model behaviors, using power laws to extrapolate risks from smaller datasets. This approach helps predict the likelihood of harmful responses or misaligned actions, aiding in efficient risk assessment for AI deployment.</description>
+    </item>
+    <item>
+      <title>Auditing language models for hidden objectives</title>
+      <link>https://www.anthropic.com/research/auditing-hidden-objectives</link>
+      <description>2025-03-13
+Anthropic's new paper explores alignment audits for AI models, using a deliberately misaligned language model to test auditing techniques. The study involves training a model with a hidden objective and having researchers uncover it, highlighting the importance of understanding AI motives beyond surface behavior.</description>
+    </item>
+    <item>
+      <title>Auditing language models for hidden objectives</title>
+      <link>https://www.anthropic.com/research/auditing-hidden-objectives</link>
+      <description>2025-03-13
+
+Anthropic's new paper explores "alignment audits" for AI models, investigating hidden objectives. Researchers trained a model with a hidden misaligned objective and conducted a blind audit, revealing the importance of understanding AI motives beyond surface behaviors. The study suggests practical auditing techniques and the potential of AI interpretability in uncovering hidden objectives.</description>
+    </item>
+    <item>
+      <title>Auditing language models for hidden objectives</title>
+      <link>https://www.anthropic.com/research/auditing-hidden-objectives</link>
+      <description>2025-03-13
+
+Anthropic's new paper explores "alignment audits" for AI models, investigating hidden objectives. The study involved training a model with a hidden misaligned objective and using blind auditing games to uncover it. Techniques like sparse autoencoders and behavioral analysis were employed. The research aims to ensure AI systems align with human intent.</description>
     </item>
   </channel>
 </rss>
