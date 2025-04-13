@@ -13,6 +13,7 @@ from urllib.parse import urljoin
 import os
 from feedparser import parse
 from gen_summary import SummaryGenerator
+import random
 
 
 def create_webdriver():
@@ -22,9 +23,25 @@ def create_webdriver():
     chrome_options.add_argument("--disable-dev-shm-usage")  # 解决资源限制
     chrome_options.add_argument("--disable-gpu")  # 如果不需要 GPU 加速，禁用它
     chrome_options.add_argument("--window-size=1920x1080")  # 设置窗口大小
+    
+    # 添加更真实的浏览器指纹
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_argument("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
+    
+    # 添加语言和接受头信息
+    chrome_options.add_argument("--lang=zh-CN,zh;q=0.9,en;q=0.8")
+    chrome_options.add_argument("--accept-language=zh-CN,zh;q=0.9,en;q=0.8")
+    
+    # 避免webdriver检测
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option("useAutomationExtension", False)
 
     # 创建 Chrome 驱动
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+    
+    # 执行脚本绕过navigator.webdriver检测
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    
     return driver
 
 def load_config(config_path='config.json'):
@@ -36,15 +53,99 @@ def fetch_blog_posts(config):
     print(f"Using selectors: block={config['block_css']}, title={config['title_css']}, description={config['description_css']}, link={config['link_css']}")
 
     if config['use_headless_browser']:
-        driver = create_webdriver()
-
-        driver.get(config['url'])
-        time_module.sleep(10)
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        driver.quit()
+        # 尝试使用无头浏览器访问
+        try:
+            driver = create_webdriver()
+            driver.get(config['url'])
+            
+            # 随机等待2-5秒
+            wait_time = random.uniform(2, 5)
+            time_module.sleep(wait_time)
+            
+            # 模拟滚动行为
+            scroll_count = random.randint(3, 8)
+            for i in range(scroll_count):
+                # 随机滚动距离
+                scroll_amount = random.randint(300, 800)
+                driver.execute_script(f"window.scrollBy(0, {scroll_amount});")
+                time_module.sleep(random.uniform(0.5, 2))
+            
+            # 随机返回顶部
+            if random.random() > 0.5:
+                driver.execute_script("window.scrollTo(0, 0);")
+                time_module.sleep(random.uniform(1, 2))
+            
+            # 最终等待页面完全加载
+            time_module.sleep(5)
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            driver.quit()
+            
+            # 检查是否获取到了所需的内容
+            test_blocks = soup.select(config['block_css'])
+            if not test_blocks:
+                print("未找到内容块，可能遇到了验证。尝试使用requests库...")
+                raise Exception("未找到内容块")
+                
+        except Exception as e:
+            print(f"浏览器访问失败: {str(e)}，尝试使用requests库...")
+            # 如果浏览器访问失败，尝试使用requests库
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+                'Referer': 'https://www.google.com/',
+                'Upgrade-Insecure-Requests': '1',
+                'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96"',
+                'sec-ch-ua-mobile': '?0',
+                'sec-ch-ua-platform': '"macOS"',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'cross-site',
+                'Sec-Fetch-User': '?1'
+            }
+            
+            session = requests.Session()
+            try:
+                response = session.get(config['url'], headers=headers, timeout=15)
+                soup = BeautifulSoup(response.content, 'html.parser')
+            except Exception as e2:
+                print(f"请求库访问也失败: {str(e2)}")
+                # 如果都失败了，返回空列表
+                return []
+        
+        # 将页面源码保存到文件中
+        with open('page_source.html', 'w', encoding='utf-8') as file:
+            file.write(str(soup))
     else:
-        response = requests.get(config['url'])
-        soup = BeautifulSoup(response.content, 'html.parser')
+        # 构建高质量请求头
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Referer': 'https://www.google.com/',
+            'Upgrade-Insecure-Requests': '1',
+            'Cache-Control': 'max-age=0',
+            'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'cross-site',
+            'Sec-Fetch-User': '?1'
+        }
+        
+        # 使用带有高质量请求头的请求
+        session = requests.Session()
+        try:
+            response = session.get(config['url'], headers=headers, timeout=15)
+            soup = BeautifulSoup(response.content, 'html.parser')
+        except Exception as e:
+            print(f"请求访问失败: {str(e)}")
+            return []
 
     # 基于文本块选择器获取所有相关块
     blocks = soup.select(config['block_css'])
